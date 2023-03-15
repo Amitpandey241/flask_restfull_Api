@@ -2,7 +2,9 @@ from flask import Flask, request,jsonify,make_response,Blueprint
 from flask_restful import Resource,Api
 from pymongo import MongoClient
 from .controller import insert,read,delete,updatee
-from .. import api
+from .. import api, app
+from .flask_celery import make_celery
+from .. import celery
 
 example = Blueprint("api",__name__)
 
@@ -31,12 +33,17 @@ class UserRegeister(Resource):
                 return jsonify({"message":"Username or Password or age is wrong"})
             else:
                 insert1 = insert(val)
+                a = insert1.get("username")
+                reverse.delay(a)
                 return jsonify({"message":"Succefully register!"})
 
 
         except Exception as e:
             return jsonify({"error": str(e)})
 
+@celery.task(name='views.reverse')
+def reverse(name):
+    return name[::-1]
 
 
 
