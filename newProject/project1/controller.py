@@ -1,4 +1,4 @@
-from .. import MongoClient
+from pymongo import MongoClient
 
 client = MongoClient()
 mydatebase = client.User

@@ -1,10 +1,11 @@
 from flask import Flask, request,jsonify,make_response,Blueprint
 from flask_restful import Resource,Api
 from pymongo import MongoClient
-from .controller import insert,read,delete,updatee
-from .. import api, app
-from .flask_celery import make_celery
-from .. import celery
+from newProject.project1 import insert,read,delete,updatee
+from newProject import api, app
+# from newProject import make_celery
+# from newProject import celery
+from newProject import create_access_token,JWTManager,get_jwt_identity,jwt_required
 
 example = Blueprint("api",__name__)
 
@@ -33,17 +34,17 @@ class UserRegeister(Resource):
                 return jsonify({"message":"Username or Password or age is wrong"})
             else:
                 insert1 = insert(val)
-                a = insert1.get("username")
-                reverse.delay(a)
+                # a = username
+                # reverse.delay(a)
                 return jsonify({"message":"Succefully register!"})
 
 
         except Exception as e:
             return jsonify({"error": str(e)})
 
-@celery.task(name='views.reverse')
-def reverse(name):
-    return name[::-1]
+# @celery.task(name='reverse')
+# def reverse(name):
+#     return name[::-1]
 
 
 
@@ -61,14 +62,17 @@ class Read(Resource):
         try:
             if n:
                 user = n.get('username')
+
+                access_token = create_access_token(identity=username)
+                return jsonify(access_token=access_token)
                 return jsonify({"message": f"User {user} is Present "})
-                makeResponse = make_response()
             else:
                 return jsonify({"message": f"User {username} is not Present"})
         except Exception as e:
             return jsonify({"error": str(e)})
 
 class Delete(Resource):
+    @jwt_required()
     def post(self):
         username= request.json.get("username")
         fin = {"username":username}
@@ -78,12 +82,14 @@ class Delete(Resource):
             if count1 == 0:
                 return jsonify({"message": "No Such user exists"})
             else:
+                current_user = get_jwt_identity()
                 return jsonify({"message": "User deleted sucessfully!"})
         except Exception as e:
             return jsonify({"error": str(e)})
 
 class Update(Resource):
-     def post(self):
+    #@jwt_required()
+    def post(self):
          try:
              username =request.json.get("username","NA")
              age = request.json.get("age","NA")
@@ -94,7 +100,7 @@ class Update(Resource):
              print(query)
              ack = query[0]
              match = query[1]
-             print("This is match",match)
+             # print("This is match",match)
              if ack == True and match>0:
                  return jsonify({"message": f"Age updated to {age}"})
              else:
