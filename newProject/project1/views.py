@@ -41,7 +41,7 @@ class UserRegeister(Resource):
 
         except Exception as e:
             return jsonify({"error": str(e)})
-
+print("new")
 # @celery.task(name='reverse')
 # def reverse(name):
 #     return name[::-1]
