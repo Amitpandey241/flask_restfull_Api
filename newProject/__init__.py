@@ -22,6 +22,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = secrets.token_hex(16)
 
 jwt = JWTManager(app)
+print("fdsf")
 # app.config['CELERY_BROKER_URL'] ='amqp://admin:admin@localhost:5672//'
 
 # celery = make_celery(app)
