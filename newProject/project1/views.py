@@ -23,6 +23,7 @@ exception handling
 difference betweeen find and fine_one query -> and its outputs.
 diff betwewen match {matchhh},{} in mongo and "$eq"???
 '''
+# @app.route("/",method=[get,post])
 class UserRegeister(Resource):
     def post(self):
         try:
@@ -41,10 +42,7 @@ class UserRegeister(Resource):
 
         except Exception as e:
             return jsonify({"error": str(e)})
-print("new")
-print("new")
-print("new")
-print("new")
+
 
 # @celery.task(name='reverse')
 # def reverse(name):
